@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseNotFound
-
+from datetime import date
 
 """
 Вьюха get_month_title_view возвращает название месяца по его номеру. 
@@ -14,9 +14,10 @@ from django.http import HttpResponse, HttpResponseNotFound
 
 
 def get_month_title_by_number(month_number: int):
-    pass  # код писать тут
+    return date(month=month_number, year=1, day=1).strftime("%B")
 
 
 def get_month_title_view(request, month_number: int):
-    # код писать тут
+    if all([month_number > 0, month_number <= 12]):
+        return HttpResponse(get_month_title_by_number(month_number))
     return HttpResponseNotFound('Месяца с таким номером не существует')
