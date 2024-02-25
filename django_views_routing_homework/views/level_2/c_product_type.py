@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpRequest
 
 
 """
@@ -36,8 +36,12 @@ PRODUCTS = [
 ]
 
 
-def get_products_view(request):
-    products = []
-    # код писать тут
+def get_products_view(request: HttpRequest) -> JsonResponse:
+    req_type = request.GET.get('type')
+    if not req_type:
+        products = PRODUCTS
+    else:
+        products = [item for item in PRODUCTS
+                    if item['type'] == req_type]
 
     return JsonResponse(data=products, safe=False)

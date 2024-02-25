@@ -1,6 +1,6 @@
 import json
 
-from django.http import JsonResponse, HttpResponseNotAllowed
+from django.http import JsonResponse, HttpResponseNotAllowed, HttpRequest
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
@@ -11,9 +11,9 @@ process_authorization_view - обрабатывает заполненные д�
 и возвращает статус об успехе или неуспехе. С ней мы и будем работать
 
 Задания:
-    1. Откройте страницу по ссылке http://127.0.0.1:8000/authorization/
-    2. Введите какие-нибудь данные, нажмите на кнопку и посмотрите на результат.
-    3. Страница отправила во вьюху process_authorization_view данные, которые мы положили в переменную data.
+    [+] 1. Откройте страницу по ссылке http://127.0.0.1:8000/authorization/
+    [+] 2. Введите какие-нибудь данные, нажмите на кнопку и посмотрите на результат.
+    [+] 3. Страница отправила во вьюху process_authorization_view данные, которые мы положили в переменную data.
        Распечатйте переменную data, чтобы посмотреть в каком формате хранятся входящие данные
     4. Допишите логику в process_authorization_view таким образом, что если юзернэйм есть
        в USERNAME_TO_PASSWORD_MAPPER и введенный пароль совпадает, то возвращайте JsonResponse со статусом 200.
@@ -35,10 +35,23 @@ USERNAME_TO_PASSWORD_MAPPER = {
 
 
 @csrf_exempt
-def process_authorization_view(request):
+def process_authorization_view(request: HttpRequest):
     if request.method == 'POST':
         data = json.loads(request.body)
-        # код писать тут
+        print(data)
+
+        JSON_MAPPER = {
+            403: JsonResponse(data={}, status=403),
+            200: JsonResponse(data={}, status=200),
+        }
+
+        if not data['username'] or not data['password']:
+            return JSON_MAPPER[403]
+        if USERNAME_TO_PASSWORD_MAPPER.get(data['username']):
+            if USERNAME_TO_PASSWORD_MAPPER[data['username']] != data['password']:
+                return JSON_MAPPER[403]
+            return JSON_MAPPER[200]
+        return JSON_MAPPER[403]
     else:
         return HttpResponseNotAllowed(permitted_methods=['POST'])
 
