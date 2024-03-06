@@ -30,6 +30,4 @@ def fetch_name_from_github_view(
 
     github_data = json.load(github_response)
     github_name = github_data.get('name', None)
-    if github_name:
-        github_name = f'"{github_name}"'
     return HttpResponse(f'{{"name": {github_name}}}', status=200)
