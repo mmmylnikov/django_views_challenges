@@ -18,9 +18,11 @@
 Когда будете писать код, не забывайте о читаемости, поддерживаемости и модульности.
 """
 import json
-from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest, JsonResponse
+
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.http import (HttpRequest, HttpResponse, HttpResponseBadRequest,
+                         JsonResponse)
 
 
 def validate_full_name(full_name: str) -> None:
