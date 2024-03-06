@@ -2,7 +2,7 @@
 В этом задании вам нужно реализовать вьюху, которая валидирует данные о пользователе.
 
 + получите json из тела запроса
-- проверьте, что данные удовлетворяют нужным требованиям
++ проверьте, что данные удовлетворяют нужным требованиям
 + если удовлетворяют, то верните ответ со статусом 200 и телом `{"is_valid": true}`
 + если нет, то верните ответ со статусом 200 и телом `{"is_valid": false}`
 + если в теле запроса невалидный json, вернуть bad request
@@ -10,7 +10,7 @@
 Условия, которым должны удовлетворять данные:
 + есть поле full_name, в нём хранится строка от 5 до 256 символов
 + есть поле email, в нём хранится строка, похожая на емейл
-- есть поле registered_from, в нём одно из двух значений: website или mobile_app
++ есть поле registered_from, в нём одно из двух значений: website или mobile_app
 + поле age необязательное: может быть, а может не быть. Если есть, то в нём хранится целое число
 + других полей нет
 
@@ -60,6 +60,7 @@ def validate_age(age: int) -> None:
 
 
 def validate_user_data_view(request: HttpRequest) -> HttpResponse:
+    http_method_not_allowed_response = HttpResponse('Method Not Allowed')
     if request.method == 'POST':
         try:
             json_data = json.loads(request.body)
@@ -80,4 +81,13 @@ def validate_user_data_view(request: HttpRequest) -> HttpResponse:
             return HttpResponse('{"is_valid": false}', status=200)
 
         return HttpResponse('{"is_valid": true}', status=200)
-    return HttpResponse()
+
+    # HTTP compliance for the "method not allowed" case by:
+    # https://developer.mozilla.org/ru/docs/Web/HTTP/Status/405
+    elif request.method in ['GET', 'HEAD']:
+        http_method_not_allowed_response.status_code = 200
+        return http_method_not_allowed_response
+    else:
+        http_method_not_allowed_response.status_code = 405
+        http_method_not_allowed_response['Allow'] = 'POST'
+        return http_method_not_allowed_response
