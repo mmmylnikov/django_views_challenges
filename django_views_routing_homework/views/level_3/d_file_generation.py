@@ -33,7 +33,7 @@ def generate_text(lenght: int | None = None):
 
 
 def generate_file_with_text_view(request: HttpRequest) -> HttpResponse:
-    MAX_LENGHT = 5000
+    max_lenght = 5000
     HttpResponse403 = HttpResponse('', status=403)
     min_length_raw = request.GET.get('length')
 
@@ -45,7 +45,7 @@ def generate_file_with_text_view(request: HttpRequest) -> HttpResponse:
     except ValueError:
         return HttpResponse403
 
-    if min_length > MAX_LENGHT or min_length == 0:
+    if min_length > max_lenght or min_length == 0:
         return HttpResponse403
 
     text_response = HttpResponse(
